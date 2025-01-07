@@ -1,0 +1,29 @@
+* Database
+* Front-end
+* Back-end
+
+DATABASE
+Create Database Structure.
+Create Queries to create, delete, update and read data.
+
+BACK-END
+Connect database
+Create API to pull data
+Create queries to create, delete, update and read data and push it to database.
+
+FRONT-END
+Connect back-end
+
+create user login
+Page 1 - Dashboard
+Page 2 - Masterlist (Full data)
+Page 3 - Orders
+Page 4 - Dispatch sheet
+
+
+Timeline for project
+Database - end of Jan
+Back-end - end of Feb
+Front-end - end of April
+Testing/Demo - May
+Live - June
