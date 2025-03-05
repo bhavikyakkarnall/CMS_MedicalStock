@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import ItemsService from '../services/items-service.js';
+import ItemsService from '../services/item-service.js';
 import ItemsFilter from './ItemsFilter.jsx';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
