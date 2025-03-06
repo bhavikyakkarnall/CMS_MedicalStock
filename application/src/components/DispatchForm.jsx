@@ -42,9 +42,9 @@ export default function DispatchForm() {
             <div style={{ margin: '30px' }} id="print">
 
                 {/* Logo, Address, Contact */}
-                <div className="d-flex justify-content-end align-items-center mb-4">
+                {/* <div className="d-flex justify-content-end align-items-center mb-4">
                     <Image src={logo} thumbnail style={{ width: '200px', height: 'auto', border: 'none' }} />
-                </div>
+                </div> */}
 
                 {/* Contact Details */}
                 <Form className="mb-6X">
