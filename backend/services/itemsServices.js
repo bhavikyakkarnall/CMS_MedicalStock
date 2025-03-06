@@ -1,101 +1,44 @@
-import itemsList from '../data-storage/data.js';
-let items = itemsList;
+import pool from '../config.js';
 
-
-class Item {
-  constructor(cs, equipment_type, status, company, tech, serial, phone, sim, po, firmware, config) {
-    this.cs = cs;
-    this.equipment_type = equipment_type;
-    this.status = status;
-    this.company = company;
-    this.tech = tech;
-    this.serial = serial;
-    this.phone = phone;
-    this.sim = sim;
-    this.po = po;
-    this.firmware = firmware;
-    this.config = config;
-  }
-
+async function getItemsByField(field, value) {
+    const query = `SELECT * FROM items WHERE ?? = ?`;
+    const [rows] = await pool.query(query, [field, value]);
+    return rows;
 }
 
-function getAllItems() {
-  return items;
+async function getAllItems() {
+    const query = `SELECT * FROM ITEM`;
+    const [rows] = await pool.query(query);
+    return rows;
 }
 
-function getItemByCS(cs) {
-  const item = items.find((item) => item.cs === cs);
-  return item;
+async function getItemByCS(cs) {
+    return await getItemsByField('cs', cs);
 }
 
-function createItem(cs, equipment_type, status, company, tech, serial, phone, sim, po, firmware, config) {
-  const newItem = new Product(cs, equipment_type, status, company, tech, serial, phone, sim, po, firmware, config);
-  items.push(newItem);
-  return newItem;
+async function createItem(itemData) {
+    const query = `INSERT INTO ITEM SET ?`;
+    const [result] = await pool.query(query, itemData);
+    return result.insertId;
 }
 
-function updateItem(cs, equipment_type, status, company, tech, serial, phone, sim, po, firmware, config) {
-  const index = items.findIndex((item) => item.cs === cs);
-  if (index !== -1) {
-    items[index].cs = cs
-    items[index].equipment_type = equipment_type
-    items[index].status = status
-    items[index].company = company
-    items[index].tech = tech
-    items[index].serial = serial
-    items[index].phone = phone
-    items[index].sim = sim
-    items[index].po = po
-    items[index].firmware = firmware
-    items[index].config = config
-    return items[index];
-  }
-  return null;
+async function updateItem(cs, itemData) {
+    const query = `UPDATE ITEM SET ? WHERE cs = ?`;
+    const [result] = await pool.query(query, [itemData, cs]);
+    return result.affectedRows;
 }
 
-function deleteItem(cs) {
-  const index = items.findIndex((item) => item.cs === cs);
-  if (index !== -1) {
-    return items.splice(index, 1)[0];
-  }
-  return null;
-}
-
-function getItemByStatus(status) {
-  const item = items.filter((item) => item.status === status);
-  return item;
-}
-
-function getItemBySerial(serial) {
-  const item = items.filter((item) => item.serial === serial);
-  return item;
-}
-
-function getItemByEquipmentType(equipment_type) {
-  const item = items.filter((item) => item.equipment_type === equipment_type);
-  return item;
-}
-
-function getItemByCompany(company) {
-  const item = items.filter((item) => item.company === company);
-  return item;
-}
-
-function getItemByTech(tech) {
-  const item = items.filter((item) => item.tech === tech);
-  return item;
+async function deleteItem(cs) {
+    const query = `DELETE FROM ITEM WHERE cs = ?`;
+    const [result] = await pool.query(query, [cs]);
+    return result.affectedRows;
 }
 
 export default {
-  Item,
-  getAllItems,
-  getItemByCS,
-  createItem,
-  updateItem,
-  deleteItem,
-  getItemBySerial,
-  getItemByEquipmentType,
-  getItemByStatus,
-  getItemByCompany,
-  getItemByTech
-}
+    getAllItems,
+    getItemByCS,
+    getItemsByField,
+    createItem,
+    updateItem,
+    deleteItem
+};

@@ -1,183 +1,58 @@
-import Item from '../services/itemsServices.js'
+import itemService from '../services/itemsServices.js';
+
 
 export default class ItemController {
-
-
-    getAllItems(req, res) {
+    static async getAllItems(req, res) {
         try {
             const { status, serial, equipment_type, company, tech } = req.query;
-            let items = null;
+            let items;
 
-            if (status) {
-                items = Item.getItemByStatus(status);
-            } else if (serial) {
-                items = Item.getItemBySerial(serial);
-            } else if (equipment_type) {
-                items = Item.getItemByEquipmentType(equipment_type);
-            } else if (company) {
-                items = Item.getItemByCompany(company);
-            } else if (tech) {
-                items = Item.getItemByTech(tech);
-            } else {
-                items = Item.getAllItems();
-            }
+            if (status) items = await itemService.getItemsByField('status', status);
+            else if (serial) items = await itemService.getItemsByField('serial', serial);
+            else if (equipment_type) items = await itemService.getItemsByField('equipment_type', equipment_type);
+            else if (company) items = await itemService.getItemsByField('company', company);
+            else if (tech) items = await itemService.getItemsByField('tech', tech);
+            else items = await itemService.getAllItems();
 
-            if (items.length === 0) {
-                throw new Error('Error: No Items to display');
-            }
-
-            res.status(200)
-            res.json(items)
-        }
-        catch (err) {
-            res.status(500);
-            res.json({ error: err.message })
+            res.status(200).json(items);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
         }
     }
 
-    getItemByCS(req, res) {
+    static async getItemByCS(req, res) {
         try {
-            let item = Item.getItemByCS(parseInt(req.params.cs))
-            if (item == null) {
-                throw new Error('Error: No games to display')
-            }
-            res.status(200)
-            res.json(item)
-        }
-        catch (err) {
-            res.status(500);
-            res.json({ error: err.message })
+            const item = await itemService.getItemByCS(req.params.cs);
+            res.status(200).json(item);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
         }
     }
 
-    createItem(req, res) {
+    static async createItem(req, res) {
         try {
-            let item = Item.createProduct(req.params.cs, req.params.equipment_type, req.params.status, req.params.company, req.params.tech, req.params.serial, req.params.phone, req.params.sim, req.params.po, req.params.firmware, req.params.config)
-            if (item == null) {
-                throw new Error('Error: No Items to display')
-            }
-            console.log(item)
-            res.status(200)
-            res.json(item)
-        }
-        catch (err) {
-            res.status(500);
-            res.json({ error: err.message })
+            const id = await itemService.createItem(req.body);
+            res.status(201).json({ id });
+        } catch (err) {
+            res.status(500).json({ error: err.message });
         }
     }
 
-    updateItem(req, res) {
+    static async updateItem(req, res) {
         try {
-            let item = Item.createProduct(req.params.cs, req.params.equipment_type, req.params.status, req.params.company, req.params.tech, req.params.serial, req.params.phone, req.params.sim, req.params.po, req.params.firmware, req.params.config)
-            if (item == null) {
-                throw new Error('Error: No Items to display')
-            }
-            console.log(item)
-            res.status(200)
-            res.json(item)
-        }
-        catch (err) {
-            res.status(500);
-            res.json({ error: err.message })
+            const updated = await itemService.updateItem(req.params.cs, req.body);
+            res.status(200).json({ updated });
+        } catch (err) {
+            res.status(500).json({ error: err.message });
         }
     }
 
-    deleteItem(req, res) {
+    static async deleteItem(req, res) {
         try {
-            let item = Item.deleteProduct(parseInt(req.params.cs))
-            if (item == null) {
-                throw new Error('Error: No Items to display')
-            }
-            console.log(item)
-            res.status(200)
-            res.json(item)
-        }
-        catch (err) {
-            res.status(500);
-            res.json({ error: err.message })
+            const deleted = await itemService.deleteItem(req.params.cs);
+            res.status(200).json({ deleted });
+        } catch (err) {
+            res.status(500).json({ error: err.message });
         }
     }
-
-    getItemByStatus(req, res) {
-        try {
-            let item = Item.getItemByStatus(req.params.status)
-            if (item == null) {
-                throw new Error('Error: No Items to display')
-            }
-            res.status(200)
-            res.json(item)
-        }
-        catch (err) {
-            res.status(500);
-            res.json({ error: err.message })
-        }
-    }
-
-    getItemBySerial(req, res) {
-        try {
-            let item = Item.getGameByTitle(req.params.serial)
-            if (item == null) {
-                throw new Error('Error: No games to display')
-            }
-            res.status(200)
-            res.json(item)
-        }
-        catch (err) {
-            res.status(500);
-            res.json({ error: err.message })
-        }
-    }
-
-    getItemByEquipmentType(req, res) {
-        try {
-            let item = Item.getItemByEquipmentType(req.params.equipment_type)
-            if (item == null) {
-                throw new Error('Error: No games to display')
-            }
-            res.status(200)
-            res.json(item)
-        }
-        catch (err) {
-            res.status(500);
-            res.json({ error: err.message })
-        }
-    }
-
-    getItemByCompany(req, res) {
-        try {
-            let item = Item.getItemByCompany(req.params.company)
-            if (item == null) {
-                throw new Error('Error: No games to display')
-            }
-            res.status(200)
-            res.json(item)
-        }
-        catch (err) {
-            res.status(500);
-            res.json({ error: err.message })
-        }
-    }
-    
-    getItemByTech(req, res) {
-        try {
-            let item = Item.getItemByTech(req.params.tech)
-            if (item == null) {
-                throw new Error('Error: No games to display')
-            }
-            res.status(200)
-            res.json(item)
-        }
-        catch (err) {
-            res.status(500);
-            res.json({ error: err.message })
-        }
-    }
-
 }
-
-
-
-
-
-
-

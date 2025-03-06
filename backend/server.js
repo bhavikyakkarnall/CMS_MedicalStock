@@ -1,13 +1,22 @@
-import express, { json } from 'express';
-import cors from 'cors';
-import itemsRoute from './routes/itemsRoute.js'
-
+import express from 'express';
+import cors from 'cors'
+import itemRoutes from './routes/itemsRoute.js';
 
 const app = express();
+
+app.use(express.json());
 app.use(cors());
 
-app.use('/items', itemsRoute)
+app.get('/', (req, res) => {
+    res.send('Welcome to your application');
+});
 
-app.use(express.static("public"));
+app.use('/items', itemRoutes);
 
-app.listen(3000, function() {console.log("Im actively listening at PORT:3000...");})
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ message: 'Something went wrong', error: err.message });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
