@@ -18,6 +18,7 @@ export default function Masterlist() {
     const [techs, setTechs] = useState([]);
     const [pos, setPOs] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
+    const [newComment, setNewComment] = useState(""); // State to hold new comment
 
     useEffect(() => {
         itemsService.getItem()
@@ -30,7 +31,7 @@ export default function Masterlist() {
                 setPOs(getUniquePOList(itemsJsonData));
             })
             .catch(error => {
-                setErrorMessage("SERVER DOWN! Unable to connect to server. Please try again later.")
+                setErrorMessage("SERVER DOWN! Unable to connect to server. Please try again later.");
             });
     }, []);
 
@@ -70,64 +71,96 @@ export default function Masterlist() {
         setItems(allItems);
     }
 
+    // Handle comment input change
+    const handleCommentChange = (e) => {
+        setNewComment(e.target.value);
+    }
+
+    // Add comment to a specific item
+    const addComment = (itemId) => {
+        const updatedItems = items.map(item => {
+            if (item.id === itemId) {
+                // Ensure comments is always an array
+                const updatedComments = Array.isArray(item.comments) ? [...item.comments, newComment] : [newComment];
+                return { ...item, comments: updatedComments };
+            }
+            return item;
+        });
+
+        const updatedItem = updatedItems.find(item => item.id === itemId);
+        setItems(updatedItems);
+        setNewComment(""); // Reset comment input
+
+        // Update the item on the server/database
+        itemsService.updateItem(itemId, updatedItem)
+            .then(response => {
+                console.log("Comment added to the database:", response);
+            })
+            .catch(error => {
+                console.error("Error adding comment to the database:", error);
+            });
+    }
+
     // Display Items
     let itemsListJsx = items.map(item => {
         return (
-            <>
-                <div key={item.id} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <Card style={{ width: '75%', margin: '10px', textAlign: 'center' }} >
-                        <Card.Body>
-                            <Card.Title><h5>CS: {item.cs}</h5></Card.Title>
-                            <Card.Text>
-                                <div>
-                                    <Stack direction='horizontal' gap={3} className="justify-content-center">
-                                        <div className='p-2'><b>Serial# </b>{item.serial}</div>
-                                        <div className='p-2'><b>Company: </b>{item.company}</div>
-                                        <div className='p-2'><b>Tech: </b>{item.tech}</div>
-                                    </Stack>
-                                </div>
+            <div key={item.id} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Card style={{ width: '75%', margin: '10px', textAlign: 'center' }} >
+                    <Card.Body>
+                        <Card.Title><h5>CS: {item.cs}</h5></Card.Title>
+                        <Card.Text>
+                            <div>
+                                <Stack direction='horizontal' gap={3} className="justify-content-center">
+                                    <div className='p-2'><b>Serial# </b>{item.serial}</div>
+                                    <div className='p-2'><b>Company: </b>{item.company}</div>
+                                    <div className='p-2'><b>Tech: </b>{item.tech}</div>
+                                </Stack>
+                            </div>
 
-                                <div>
-                                    <Stack direction='horizontal' gap={3} className="justify-content-center">
-                                        <div className='p-2'><b>Phone# </b>{item.phone}</div>
-                                        <div className='p-2'><b>SIM# </b>{item.sim}</div>
-                                        <div className='p-2'><b>PO# </b>{item.po}</div>
-                                    </Stack>
-                                </div>
-                                <div>
-                                    <Stack direction='horizontal' gap={2} className="justify-content-center">
-                                        <div className='p-2'><b>Config: </b>{item.config}</div>
-                                        <div className='p-2'><b>Firmware: </b>{item.firmware}</div>
-                                        <div className='p-2'><b>Status: </b>{item.status}</div>
-                                    </Stack>
-                                </div>
-                            </Card.Text>
-                        </Card.Body>
-                        <Accordion defaultActiveKey="0">
-                            <Accordion.Item eventKey="0xs">
-                                <Accordion.Header>Comments</Accordion.Header>
-                                <Accordion.Body>
-                                    <h6 style={{display: 'flex', justifyContent: 'left'}}>User 1</h6>
-                                    <p style={{display: 'flex', justifyContent: 'left'}}>Tech tried to install unit in mulitple sites, but the unit not able to send signals. Advised return to ADT.</p>
-
-                                    <h6 style={{display: 'flex', justifyContent: 'left'}}>Refurb technician</h6>
-                                    <p style={{display: 'flex', justifyContent: 'left'}}>Medical unit returned.</p>
-                                    
-                                    <Stack direction='horizontal' gap={2} className="justify-content-center">
-                                        <Form.Control className='p-2' placeholder="Comment" />
-                                        <Button className='p-2' variant="primary">Add</Button>
-                                        <Button className='p-2' variant="primary">Edit</Button>
-                                    </Stack>
-                                </Accordion.Body>
-                            </Accordion.Item>
-                        </Accordion>
-                    </Card>
-                </div>
-
-            </>
-
-
-        )
+                            <div>
+                                <Stack direction='horizontal' gap={3} className="justify-content-center">
+                                    <div className='p-2'><b>Phone# </b>{item.phone}</div>
+                                    <div className='p-2'><b>SIM# </b>{item.sim}</div>
+                                    <div className='p-2'><b>PO# </b>{item.po}</div>
+                                </Stack>
+                            </div>
+                            <div>
+                                <Stack direction='horizontal' gap={2} className="justify-content-center">
+                                    <div className='p-2'><b>Config: </b>{item.config}</div>
+                                    <div className='p-2'><b>Firmware: </b>{item.firmware}</div>
+                                    <div className='p-2'><b>Status: </b>{item.status}</div>
+                                </Stack>
+                            </div>
+                        </Card.Text>
+                    </Card.Body>
+                    <Accordion defaultActiveKey="0">
+                        <Accordion.Item eventKey="0xs">
+                            <Accordion.Header>Comments</Accordion.Header>
+                            <Accordion.Body>
+                                {/* Ensure comments is an array before mapping */}
+                                {Array.isArray(item.comments) && item.comments.map((comment, index) => (
+                                    <div key={index} style={{ display: 'flex', justifyContent: 'left' }}>
+                                        <h6>User {index + 1}</h6>
+                                        <div>{comment}</div>
+                                    </div>
+                                ))}
+                                <Stack direction='horizontal' gap={2} className="justify-content-center">
+                                    <Form.Control
+                                        className='p-2'
+                                        placeholder="Add a comment"
+                                        value={newComment}
+                                        onChange={handleCommentChange}
+                                    />
+                                    <Button className='p-2' variant="primary" onClick={() => addComment(item.id)}>
+                                        Add Comment
+                                    </Button>
+                                </Stack>
+                            </Accordion.Body>
+                        </Accordion.Item>
+                    </Accordion>
+                </Card>
+            </div>
+        );
     });
 
     return (
