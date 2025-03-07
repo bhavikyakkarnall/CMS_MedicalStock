@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors'
 import itemRoutes from './routes/itemsRoute.js';
+import userRoutes from './routes/userRoute.js';
+import commentRoutes from './routes/commentRoute.js';
 
 const app = express();
 
@@ -12,6 +14,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/items', itemRoutes);
+app.use('/users', userRoutes);
+app.use('/comments', commentRoutes);
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
