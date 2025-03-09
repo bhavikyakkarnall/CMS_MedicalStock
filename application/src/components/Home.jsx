@@ -1,42 +1,38 @@
-import { useState } from 'react';
-import Carousel from 'react-bootstrap/Carousel';
+import Table from 'react-bootstrap/Table';
 
 function Home() {
-    const [index, setIndex] = useState(0);
 
-  const handleSelect = (selectedIndex) => {
-    setIndex(selectedIndex);
-  };
 
   return (
     <>
-    <div style={{ marginTop: '60px' }}>
-    <Carousel activeIndex={index} onSelect={handleSelect}>
-      <Carousel.Item>
-        <Carousel.Caption>
-          <h3>First slide label</h3>
-          <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-        </Carousel.Caption>
-      </Carousel.Item>
-      <Carousel.Item>
-        <Carousel.Caption>
-          <h3>Second slide label</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        </Carousel.Caption>
-      </Carousel.Item>
-      <Carousel.Item>
-        <Carousel.Caption>
-          <h3>Third slide label</h3>
-          <p>
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur.
-          </p>
-        </Carousel.Caption>
-      </Carousel.Item>
-    </Carousel>
-    </div>
-    
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th></th>
+            <th>On-Hand</th>
+            <th>Installed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Storeroom</td>
+            <td>1</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>HomeSafe</td>
+            <td>3</td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>Return</td>
+            <td>1</td>
+            <td>0</td>
+          </tr>
+        </tbody>
+      </Table>
     </>
-    
+
   );
 }
 
